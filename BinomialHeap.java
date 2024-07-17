@@ -113,6 +113,7 @@ public class BinomialHeap
 			if (heap1Curr.rank < heap2Curr.rank){
 				heap1Curr.next = heap2Curr;
 				heap2Curr.next = this.last.next;
+				this.last = heap2.last;
 				endFlag = true;
 			}
 
@@ -135,6 +136,12 @@ public class BinomialHeap
 					heap2Curr.connect(heap1Curr);
 
 					heap2Curr = temp;
+
+					if (heap1Curr == this.last){
+						this.last = heap2Curr;
+					}
+
+
 				}
 			}
 		}
