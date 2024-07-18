@@ -25,7 +25,28 @@ public class BinomialHeap
 	 */
 	public HeapItem insert(int key, String info)
 	{
-		return null; // should be replaced by student code
+		BinomialHeap toMeld = new BinomialHeap();
+
+		HeapItem i = new HeapItem();
+		i.key = key;
+		i.info = info;
+		i.node = new HeapNode();
+		HeapNode n = i.node;
+		n.next=n;
+		n.item = i;
+		n.rank = 0;
+		n.child = null;
+		n.parent = null;
+
+		toMeld.last = n;
+		toMeld.min = n;
+		toMeld.size = 1;
+
+		this.meld(toMeld);
+
+
+
+		return i; // should be replaced by student code
 	}
 
 	/**
@@ -61,10 +82,10 @@ public class BinomialHeap
 	{
 		item.key -= diff;
 		while (item.node.parent != null && item.key < item.node.parent.item.key){
-			int temp = item.key;
-			item.key = item.node.parent.item.key;
-			item.node.parent.item.key = temp;
-			item = item.node.parent.item;
+
+			HeapItem temp = item;
+			item.node.item = item.node.parent.item;
+			item.node.parent.item = temp;
 		}
 		if (item.key < this.min.item.key){
 			this.min = item.node;
@@ -89,68 +110,105 @@ public class BinomialHeap
 	 * Meld the heap with heap2
 	 *
 	 */
-	public void meld(BinomialHeap heap2)
-	{
+	public void meld(BinomialHeap heap2){
+		if (heap2 == null) return;
 		if (heap2.size == 0){
 			return;
 		}
-		this.size += heap2.size;
-		if (this.min.item.key > heap2.min.item.key){
+		if (this.size == 0){
+			this.size = heap2.size;
+			this.last = heap2.last;
+			this.min = heap2.min;
+			return;
+		}
+
+		this.size+= heap2.size();
+		if (heap2.min.item.key < this.min.item.key){
 			this.min = heap2.min;
 		}
 
-		HeapNode heap1prev = this.last;
-		HeapNode heap1Curr = this.last.next;
-		HeapNode heap2Curr = heap2.last.next;
+		HeapNode currHeap1 = this.last.next;
+		HeapNode prevHeap1 = this.last;
+		HeapNode currHeap2 = heap2.last.next;
+		//System.out.println(currHeap1.item.key);
 
-		boolean endFlag = false;
 
-		for (int i = 0; i<heap2.numTrees() || !endFlag ;i++){
-			while (heap1Curr.rank>= heap2Curr.rank || heap1Curr.next.rank < heap1prev.next.rank ){
-				heap1prev = heap1prev.next;
-				heap1Curr = heap1Curr.next;
-			}
-			if (heap1Curr.rank < heap2Curr.rank){
-				heap1Curr.next = heap2Curr;
-				heap2Curr.next = this.last.next;
-				this.last = heap2.last;
-				endFlag = true;
-			}
-
-			else if (heap1Curr.rank>heap2Curr.rank){
-				heap1prev.next = heap2Curr;
-				heap2Curr.next = heap2Curr;
-
-				heap2Curr = heap2Curr.next;
-			}
-			else if (heap1Curr.rank == heap2Curr.rank){
-				if (heap1Curr.item.key <= heap2Curr.item.key){
-					heap1Curr.connect(heap2Curr);
-					heap2Curr = heap2Curr.parent.next;
+		for (int i = 0; i<heap2.numTrees();i++){
+			//System.out.println(currHeap1.item.key);
+			//System.out.println(currHeap2.item.key);
+			HeapNode next = currHeap2.next;
+			while (currHeap2.rank > currHeap1.rank){
+				//System.out.println(currHeap1.item.key);
+				//System.out.println(currHeap2.item.key);
+				if (currHeap1 == this.last){
+					HeapNode temp = currHeap1.next;
+					currHeap1.next = currHeap2;
+					heap2.last.next = temp;
+					this.last = heap2.last;
+					return;
 				}
-				else{
-					HeapNode temp = heap2Curr.next;
+				prevHeap1 = currHeap1;
+				currHeap1 = currHeap1.next;
+			}
+			if (currHeap2.rank < currHeap1.rank){
+				prevHeap1.next = currHeap2;
+				currHeap2.next = currHeap1;
+				prevHeap1 = currHeap2;
+			}
+			else if (currHeap2.rank == currHeap1.rank){
+				while (currHeap2.rank == currHeap1.rank && currHeap1.next != currHeap1){
 
-					heap1prev.next = heap2Curr;
-					heap2Curr.next = heap1Curr.next;
-					heap2Curr.connect(heap1Curr);
+					prevHeap1.next=currHeap1.next;
 
-					heap2Curr = temp;
-
-					if (heap1Curr == this.last){
-						this.last = heap2Curr;
+					if (currHeap2.item.key >= currHeap1.item.key){
+						currHeap1.connect(currHeap2);
+						currHeap1 = prevHeap1.next;
+						currHeap2 = currHeap2.parent;
+					}
+					else {
+						currHeap2.connect(currHeap1);
+						if (currHeap1 == this.last){
+							this.last = currHeap2;
+						}
+						currHeap1 = prevHeap1.next;
 					}
 
-
 				}
+				if (currHeap2.rank != currHeap1.rank){
+					currHeap2.next = prevHeap1.next;
+					prevHeap1.next = currHeap2;
+					currHeap1 = currHeap2;
+				}
+				else {
+					if (currHeap2.item.key >= currHeap1.item.key){
+						currHeap1.connect(currHeap2);
+					}
+					else {
+
+						currHeap2.connect(currHeap1);
+						this.last = currHeap2;
+						currHeap2.next = currHeap2;
+						currHeap1 = currHeap2;
+
+					}
+				}
+
+
 			}
+
+
+			currHeap2 = next;
+
 		}
 
-
-
-
-		return; // should be replaced by student code
+		return;
 	}
+
+
+
+
+
+
 
 	/**
 	 *
@@ -202,13 +260,18 @@ public class BinomialHeap
 		public HeapNode parent;
 		public int rank;
 
+		//gets 2 nodes with same rank and connect node2 to node1 such that the rank of node1 increase
 		private void connect(HeapNode node2){
-			HeapNode temp1 = this.child;
+
+
+			if (this.child != null){
+				HeapNode temp2 = this.child.next;
+				this.child.next = node2;
+				node2.next = temp2;
+			}
 			node2.parent = this;
 			this.child = node2;
-			HeapNode temp2 = temp1.next;
-			temp1.next = node2;
-			node2.next = temp2;
+
 			this.rank++;
 			return;
 		}
