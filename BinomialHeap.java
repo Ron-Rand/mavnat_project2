@@ -199,6 +199,7 @@ public class BinomialHeap
 				while (currHeap2.rank == currHeap1.rank && currHeap1.next != currHeap1){
 
 					prevHeap1.next=currHeap1.next;
+					currHeap1.next = currHeap1;
 
 					if (currHeap2.item.key >= currHeap1.item.key){
 						currHeap1.connect(currHeap2);
