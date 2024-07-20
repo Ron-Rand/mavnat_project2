@@ -286,4 +286,46 @@ public class BinomialHeap
 		public int key;
 		public String info;
 	}
+
+
+
+
+	///printing///
+	public void printHeap() {
+	        if (this.size == 0) {
+	            System.out.println("The heap is empty.");
+	            return;
+	        }
+	
+	        System.out.println("Binomial Heap:");
+	        HeapNode current = this.last.next;
+	        do {
+	            printTree(current, "", "");
+	            System.out.println();
+	            current = current.next;
+	        } while (current != this.last.next);
+    }
+
+    	private void printTree(HeapNode node, String indent1, String indent2) {
+	        if (node.rank==0) {
+	            System.out.println(indent1 + "\\\n" + indent2 + "|>B" + node.rank + ": " + node.item.key);
+	        }
+	        else {
+	            System.out.println(indent1 + "\n" + indent1 + "> B" + node.rank + ": " + node.item.key);
+	
+	        }
+	        if (node.child != null) {
+	            HeapNode child = node.child.next;
+	            do {
+	                if (child != node.child.next) {
+	                    printTree(child, indent1 + "    |", indent2+"    |");
+	                }
+	                else {
+	                    printTree(child, indent1 + "     ", indent2+"    ");
+	
+	                }
+	                child = child.next;
+	            } while (child != node.child.next);
+	        }
+	    }
 }
