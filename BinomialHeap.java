@@ -54,9 +54,9 @@ public class BinomialHeap
 	 * Delete the minimal item
 	 *
 	 */
-	public void deleteMin()
-	   BinomialHeap toMeld = new BinomialHeap();
-
+	 public void deleteMin() {
+	        BinomialHeap toMeld = new BinomialHeap();
+	
 	        //set up the new heap properly so we can meld it with our original heap
 	        toMeld.last = this.min.child;
 	        toMeld.size = (int)Math.pow(2,this.min.rank)-1;
