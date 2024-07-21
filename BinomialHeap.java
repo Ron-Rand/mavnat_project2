@@ -57,52 +57,61 @@ public class BinomialHeap
 	 * Delete the minimal item
 	 *
 	 */
-	public void deleteMin() {
-		BinomialHeap toMeld = new BinomialHeap();
-
-		//set up the new heap properly so we can meld it with our original heap
-		toMeld.last = this.min.child;
-		toMeld.size = (int)Math.pow(2,this.min.rank)-1;
-		this.size-=((int)Math.pow(2,this.min.rank)-2);
-
-		//find the minimun of our second heap
-		HeapNode curr = this.min.child.next;
-		HeapNode tempMin = curr;
-		while (curr!=this.min.child){
-			if (curr.item.key>tempMin.item.key){
-				tempMin = curr;
-			}
-			curr = curr.next;
-		}
-
-		toMeld.min =tempMin;
-		if (this.min.next==this.min){
-			this.size = toMeld.size;
-			this.last = toMeld.last;
-			this.min = toMeld.min;
-			return;
-		}
-
-		//delete the tree starting from the minimum from our heap, it is now in our new heap waiting to meld
-		//find our heap new minimum after removing the old one
-		curr = this.min.next;
-		tempMin = curr;
-		while (curr.next!=this.min){
-			if (curr.item.key>tempMin.item.key){
-				tempMin = curr;
-			}
-			curr = curr.next;
-		}
-		if (curr.item.key>tempMin.item.key){
-			tempMin = curr;
-		}
-		curr.next = this.min.next;
-		this.min = tempMin;
-
-
-		this.meld(toMeld);
-	}
-
+	    public void deleteMin() {
+	        if(this.min.rank==0){
+	            HeapNode curr = this.min;
+	            while (curr.next!=this.min){
+	                curr = curr.next;
+	            }
+	            curr.next = this.min.next;
+	            return;
+	        }
+	
+	
+	        BinomialHeap toMeld = new BinomialHeap();
+	
+	        //set up the new heap properly so we can meld it with our original heap
+	        toMeld.last = this.min.child;
+	        toMeld.size = (int)Math.pow(2,this.min.rank)-1;
+	        this.size-=((int)Math.pow(2,this.min.rank)-2);
+	
+	        //find the minimun of our second heap
+	        HeapNode curr = this.min.child.next;
+	        HeapNode tempMin = curr;
+	        do{
+	            if (curr.item.key>tempMin.item.key){
+	                tempMin = curr;
+	            }
+	            curr = curr.next;
+	        }while (curr!=this.min.child);
+	
+	        toMeld.min =tempMin;
+	
+	        if (this.min.next==this.min){
+	            this.size = toMeld.size;
+	            this.last = toMeld.last;
+	            this.min = toMeld.min;
+	            return;
+	        }
+	
+	        //delete the tree starting from the minimum from our heap, it is now in our new heap waiting to meld
+	        //find our heap new minimum after removing the old one
+	        curr = this.min.next;
+	        tempMin = curr;
+	        while (curr.next!=this.min){
+	            if (curr.item.key>tempMin.item.key){
+	                tempMin = curr;
+	            }
+	            curr = curr.next;
+	        }
+	        if (curr.item.key>tempMin.item.key){
+	            tempMin = curr;
+	        }
+	        curr.next = this.min.next;
+	        this.min = tempMin;
+	
+	        this.meld(toMeld);
+	    }
 	/**
 	 *
 	 * Return the minimal HeapItem, null if empty.
