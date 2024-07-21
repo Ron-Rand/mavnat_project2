@@ -177,6 +177,7 @@ public class BinomialHeap
 			//System.out.println(currHeap1.item.key);
 			//System.out.println(currHeap2.item.key);
 			HeapNode next = currHeap2.next;
+			currHeap2.next = currHeap2;
 			while (currHeap2.rank > currHeap1.rank){
 				//System.out.println(currHeap1.item.key);
 				//System.out.println(currHeap2.item.key);
