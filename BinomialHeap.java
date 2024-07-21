@@ -8,11 +8,13 @@ public class BinomialHeap
 	public int size;
 	public HeapNode last;
 	public HeapNode min;
+	public int numTrees;
 
 	public BinomialHeap() {
 		this.size = 0;
 		this.min = null;
 		this.last = null;
+		this.numTrees = 0;
 
 	}
 
@@ -26,6 +28,7 @@ public class BinomialHeap
 	public HeapItem insert(int key, String info)
 	{
 		BinomialHeap toMeld = new BinomialHeap();
+		toMeld.numTrees = 1;
 
 		HeapItem i = new HeapItem();
 		i.key = key;
@@ -54,51 +57,51 @@ public class BinomialHeap
 	 * Delete the minimal item
 	 *
 	 */
-	 public void deleteMin() {
-	        BinomialHeap toMeld = new BinomialHeap();
-	
-	        //set up the new heap properly so we can meld it with our original heap
-	        toMeld.last = this.min.child;
-	        toMeld.size = (int)Math.pow(2,this.min.rank)-1;
-	        this.size-=((int)Math.pow(2,this.min.rank)-2);
-	
-	        //find the minimun of our second heap
-	        HeapNode curr = this.min.child.next;
-	        HeapNode tempMin = curr;
-	        while (curr!=this.min.child){
-	            if (curr.item.key>tempMin.item.key){
-	                tempMin = curr;
-	            }
-	            curr = curr.next;
-	        }
-	
-	        toMeld.min =tempMin;
-	        if (this.min.next==this.min){
-	            this.size = toMeld.size;
-	            this.last = toMeld.last;
-	            this.min = toMeld.min;
-	            return;
-	        }
-	
-	        //delete the tree starting from the minimum from our heap, it is now in our new heap waiting to meld
-	        //find our heap new minimum after removing the old one
-	        curr = this.min.next;
-	        tempMin = curr;
-	        while (curr.next!=this.min){
-	            if (curr.item.key>tempMin.item.key){
-	                tempMin = curr;
-	            }
-	            curr = curr.next;
-	        }
-	        if (curr.item.key>tempMin.item.key){
-	            tempMin = curr;
-	        }
-	        curr.next = this.min.next;
-	        this.min = tempMin;
-	
-	
-	        this.meld(toMeld);
-	    }
+	public void deleteMin() {
+		BinomialHeap toMeld = new BinomialHeap();
+
+		//set up the new heap properly so we can meld it with our original heap
+		toMeld.last = this.min.child;
+		toMeld.size = (int)Math.pow(2,this.min.rank)-1;
+		this.size-=((int)Math.pow(2,this.min.rank)-2);
+
+		//find the minimun of our second heap
+		HeapNode curr = this.min.child.next;
+		HeapNode tempMin = curr;
+		while (curr!=this.min.child){
+			if (curr.item.key>tempMin.item.key){
+				tempMin = curr;
+			}
+			curr = curr.next;
+		}
+
+		toMeld.min =tempMin;
+		if (this.min.next==this.min){
+			this.size = toMeld.size;
+			this.last = toMeld.last;
+			this.min = toMeld.min;
+			return;
+		}
+
+		//delete the tree starting from the minimum from our heap, it is now in our new heap waiting to meld
+		//find our heap new minimum after removing the old one
+		curr = this.min.next;
+		tempMin = curr;
+		while (curr.next!=this.min){
+			if (curr.item.key>tempMin.item.key){
+				tempMin = curr;
+			}
+			curr = curr.next;
+		}
+		if (curr.item.key>tempMin.item.key){
+			tempMin = curr;
+		}
+		curr.next = this.min.next;
+		this.min = tempMin;
+
+
+		this.meld(toMeld);
+	}
 
 	/**
 	 *
@@ -159,6 +162,8 @@ public class BinomialHeap
 			this.size = heap2.size;
 			this.last = heap2.last;
 			this.min = heap2.min;
+			//num trees change
+			this.numTrees = heap2.numTrees;
 			return;
 		}
 
@@ -170,37 +175,39 @@ public class BinomialHeap
 		HeapNode currHeap1 = this.last.next;
 		HeapNode prevHeap1 = this.last;
 		HeapNode currHeap2 = heap2.last.next;
-		//System.out.println(currHeap1.item.key);
 
 
 		for (int i = 0; i<heap2.numTrees();i++){
-			//System.out.println(currHeap1.item.key);
-			//System.out.println(currHeap2.item.key);
 			HeapNode next = currHeap2.next;
-			currHeap2.next = currHeap2;
 			while (currHeap2.rank > currHeap1.rank){
-				//System.out.println(currHeap1.item.key);
-				//System.out.println(currHeap2.item.key);
 				if (currHeap1 == this.last){
 					HeapNode temp = currHeap1.next;
 					currHeap1.next = currHeap2;
 					heap2.last.next = temp;
 					this.last = heap2.last;
+					//num trees change
+					this.numTrees += heap2.numTrees()-i;
 					return;
 				}
 				prevHeap1 = currHeap1;
 				currHeap1 = currHeap1.next;
 			}
+			currHeap2.next = currHeap2;
 			if (currHeap2.rank < currHeap1.rank){
 				prevHeap1.next = currHeap2;
 				currHeap2.next = currHeap1;
 				prevHeap1 = currHeap2;
+				//num trees change
+				this.numTrees++;
+
 			}
 			else if (currHeap2.rank == currHeap1.rank){
-				while (currHeap2.rank == currHeap1.rank && currHeap1.next != currHeap1){
 
+				while (currHeap2.rank == currHeap1.rank && currHeap1.next != currHeap1){
 					prevHeap1.next=currHeap1.next;
 					currHeap1.next = currHeap1;
+					//num trees change
+					this.numTrees--;
 
 					if (currHeap2.item.key >= currHeap1.item.key){
 						currHeap1.connect(currHeap2);
@@ -220,13 +227,14 @@ public class BinomialHeap
 					currHeap2.next = prevHeap1.next;
 					prevHeap1.next = currHeap2;
 					currHeap1 = currHeap2;
+					//num trees change
+					this.numTrees++;
 				}
 				else {
 					if (currHeap2.item.key >= currHeap1.item.key){
 						currHeap1.connect(currHeap2);
 					}
 					else {
-
 						currHeap2.connect(currHeap1);
 						this.last = currHeap2;
 						currHeap2.next = currHeap2;
@@ -278,7 +286,11 @@ public class BinomialHeap
 	 * Return the number of trees in the heap.
 	 *
 	 */
-	public int numTrees()
+	public int numTrees(){
+		return this.numTrees;
+	}
+
+	public int numTrees_On()
 	{
 		String b = Integer.toBinaryString(size);
 		int count = 0;
@@ -330,44 +342,43 @@ public class BinomialHeap
 	}
 
 
-
-
 	///printing///
 	public void printHeap() {
-	        if (this.size == 0) {
-	            System.out.println("The heap is empty.");
-	            return;
-	        }
-	
-	        System.out.println("Binomial Heap:");
-	        HeapNode current = this.last.next;
-	        do {
-	            printTree(current, "", "");
-	            System.out.println();
-	            current = current.next;
-	        } while (current != this.last.next);
-    }
+		if (this.size == 0) {
+			System.out.println("The heap is empty.");
+			return;
+		}
 
-    	private void printTree(HeapNode node, String indent1, String indent2) {
-	        if (node.rank==0) {
-	            System.out.println(indent1 + "\\\n" + indent2 + "|>B" + node.rank + ": " + node.item.key);
-	        }
-	        else {
-	            System.out.println(indent1 + "\n" + indent1 + "> B" + node.rank + ": " + node.item.key);
-	
-	        }
-	        if (node.child != null) {
-	            HeapNode child = node.child.next;
-	            do {
-	                if (child != node.child.next) {
-	                    printTree(child, indent1 + "    |", indent2+"    |");
-	                }
-	                else {
-	                    printTree(child, indent1 + "     ", indent2+"    ");
-	
-	                }
-	                child = child.next;
-	            } while (child != node.child.next);
-	        }
-	    }
+		System.out.println("Binomial Heap:");
+		HeapNode current = this.last.next;
+		do {
+			printTree(current, "", "");
+			System.out.println();
+			current = current.next;
+		} while (current != this.last.next);
+	}
+
+	private void printTree(HeapNode node, String indent1, String indent2) {
+		if (node.rank==0) {
+			System.out.println(indent1 + "\\\n" + indent2 + "|>B" + node.rank + ": " + node.item.key);
+		}
+		else {
+			System.out.println(indent1 + "\n" + indent1 + "> B" + node.rank + ": " + node.item.key);
+
+		}
+		if (node.child != null) {
+			HeapNode child = node.child.next;
+			do {
+				if (child != node.child.next) {
+					printTree(child, indent1 + "    |", indent2+"    |");
+				}
+				else {
+					printTree(child, indent1 + "     ", indent2+"    ");
+
+				}
+				child = child.next;
+			} while (child != node.child.next);
+		}
+	}
+	//printing//
 }
