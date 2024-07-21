@@ -73,6 +73,8 @@ public class BinomialHeap
 	        //set up the new heap properly so we can meld it with our original heap
 	        toMeld.last = this.min.child;
 	        toMeld.size = (int)Math.pow(2,this.min.rank)-1;
+		toMeld.numTrees = this.min.rank-1;
+        	this.numTrees-=1;
 	        this.size-=((int)Math.pow(2,this.min.rank)-2);
 	
 	        //find the minimun of our second heap
