@@ -137,9 +137,14 @@ public class BinomialHeap
 		item.key -= diff;
 		while (item.node.parent != null && item.key < item.node.parent.item.key){
 
-			HeapItem temp = item;
-			item.node.item = item.node.parent.item;
-			item.node.parent.item = temp;
+			HeapItem tempItem = item.node.parent.item;
+			HeapNode tempNode = item.node;
+			item.node.parent.item = item;
+			item.node = item.node.parent;
+			tempItem.node = tempNode;
+			tempNode.item = tempItem;
+
+
 		}
 		if (item.key < this.min.item.key){
 			this.min = item.node;
