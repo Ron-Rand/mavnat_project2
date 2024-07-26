@@ -57,6 +57,7 @@ public class BinomialHeap
 	 * Delete the minimal item
 	 *
 	 */
+	
 	public void deleteMin2(){
 	        //first non trivial case
 	        if(this.size==0||this.size==1){
@@ -70,10 +71,10 @@ public class BinomialHeap
 	        //second non trivial case
 	        if(this.min.rank == 0){
 	            HeapNode curr = this.min;
-	            HeapNode newMin = curr.next;
+	            HeapNode newMin = this.min.next;
 	            do{
-	                if(curr.item.key<newMin.item.key){
-	                    newMin = curr;
+	                if(curr.next.item.key<newMin.item.key&&curr!=this.min){
+	                    newMin = curr.next;
 	                }
 	                curr = curr.next;
 	            }while(curr.next!=this.min);
@@ -81,6 +82,7 @@ public class BinomialHeap
 	            this.min = newMin;
 	            this.numTrees-=1;
 	            this.size-=1;
+	            return;
 	        }
 	
 	        BinomialHeap toMeld = new BinomialHeap();
@@ -111,8 +113,8 @@ public class BinomialHeap
 	        this.numTrees-=1;
 	
 	        curr = this.min;
-	        HeapNode newMin = curr;
-	        HeapNode newLast = curr;
+	        HeapNode newMin = curr.next;
+	        HeapNode newLast = curr.next;
 	        do{
 	            curr = curr.next;
 	            if (curr.item.key<newMin.item.key){
@@ -128,7 +130,7 @@ public class BinomialHeap
 	        this.last = newLast;
 	
 	        this.meld(toMeld);
-    }
+	    }
 	
 	    public void deleteMin() {
 	        if(this.min.rank==0){
