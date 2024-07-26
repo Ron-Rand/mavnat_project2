@@ -57,6 +57,79 @@ public class BinomialHeap
 	 * Delete the minimal item
 	 *
 	 */
+	public void deleteMin2(){
+	        //first non trivial case
+	        if(this.size==0||this.size==1){
+	            this.min=null;
+	            this.size=0;
+	            this.numTrees=0;
+	            this.last=null;
+	            return;
+	        }
+	
+	        //second non trivial case
+	        if(this.min.rank == 0){
+	            HeapNode curr = this.min;
+	            HeapNode newMin = curr.next;
+	            do{
+	                if(curr.item.key<newMin.item.key){
+	                    newMin = curr;
+	                }
+	                curr = curr.next;
+	            }while(curr.next!=this.min);
+	            curr.next = this.min.next;
+	            this.min = newMin;
+	            this.numTrees-=1;
+	            this.size-=1;
+	        }
+	
+	        BinomialHeap toMeld = new BinomialHeap();
+	
+	        // find the new heap parameters
+	        HeapNode toMeldLast = this.min.child;
+	        int toMeldSize = (int)Math.pow(2,this.min.rank)-1;
+	        int toMeldNumTrees = this.min.rank;
+	
+	        HeapNode curr = toMeldLast;
+	        HeapNode toMeldMin = curr;
+	        do{
+	            curr.parent=null;
+	            if(curr.item.key<toMeldMin.item.key){
+	                toMeldMin = curr;
+	            }
+	            curr = curr.next;
+	        }while (curr!=toMeldLast);
+	
+	        toMeld.size = toMeldSize;
+	        toMeld.numTrees = toMeldNumTrees;
+	        toMeld.min = toMeldMin;
+	        toMeld.last = toMeldLast;
+	
+	
+	        //correct the current heap stats
+	        this.size-=(toMeldSize+1);
+	        this.numTrees-=1;
+	
+	        curr = this.min;
+	        HeapNode newMin = curr;
+	        HeapNode newLast = curr;
+	        do{
+	            curr = curr.next;
+	            if (curr.item.key<newMin.item.key){
+	                newMin = curr;
+	            }
+	            if (curr.rank>newLast.rank){
+	                newLast = curr;
+	            }
+	        }while (curr.next!=this.min);
+	
+	        curr.next = this.min.next;
+	        this.min = newMin;
+	        this.last = newLast;
+	
+	        this.meld(toMeld);
+    }
+	
 	    public void deleteMin() {
 	        if(this.min.rank==0){
 	            HeapNode curr = this.min;
