@@ -189,6 +189,116 @@ public class BinomialHeap
 	
 	        this.meld(toMeld);
 	    }
+
+	public void deleteMin3(){
+		if (this.size == 0 || this.size == 1){
+			this.min = null;
+			this.size = 0;
+			this.numTrees = 0;
+			this.last = null;
+		}
+		else if (this.numTrees == 1){
+
+			HeapNode newLast = this.min.child;
+			HeapNode newMin = this.min.child;
+
+			HeapNode curr = this.min.child.next;
+			do{
+				curr.parent = null;
+
+				if(newMin.item.key > curr.item.key){
+					newMin = curr;
+				}
+
+				curr = curr.next;
+
+			}while (curr.rank != 0);
+
+
+			this.numTrees = this.min.rank;
+			this.size = this.size - 1;
+			this.min = newMin;
+			this.last = newLast;
+
+		}
+		else if( this.min.rank == 0){
+
+			HeapNode newMin = this.min.next;
+			HeapNode curr = this.min.next;
+			while (curr != this.min){
+				if (newMin.item.key > curr.item.key){
+					newMin = curr;
+				}
+				curr = curr.next;
+			}
+
+			this.last.next = this.min.next;
+			this.size -= 1;
+			this.numTrees -= 1;
+			this.min = newMin;
+
+		}
+		else {
+
+			BinomialHeap toMeld = new BinomialHeap();
+
+			HeapNode toMeldLast = this.min.child;
+			HeapNode toMeldMin = this.min.child;
+
+			HeapNode curr = this.min.child.next;
+			do{
+				curr.parent = null;
+
+				if(toMeldMin.item.key > curr.item.key){
+					toMeldMin = curr;
+				}
+
+				curr = curr.next;
+
+			}while (curr.rank != 0);
+
+			toMeld.last = toMeldLast;
+			toMeld.min = toMeldMin;
+			toMeld.size = (int)Math.pow(2,this.min.item.key)-1;
+			toMeld.numTrees = this.min.rank;
+
+			HeapNode nextLast = this.min.next;
+			HeapNode nextMin = this.min.next;
+
+			curr = this.min.next;
+
+			while (curr.next != this.min){
+
+				if(curr.rank > nextLast.rank){
+					nextLast = curr;
+				}
+				if(curr.item.key < nextMin.item.key){
+					nextMin = curr;
+				}
+
+				curr = curr.next;
+			}
+
+			if(curr.rank > nextLast.rank){
+				nextLast = curr;
+			}
+			if(curr.item.key < nextMin.item.key){
+				nextMin = curr;
+			}
+
+			curr.next = this.min.next;
+
+			this.size -= Math.pow(2,this.min.rank);
+			this.last= nextLast;
+			this.min = nextMin;
+			this.numTrees -= 1;
+
+			this.meld(toMeld);
+
+
+
+		}
+	}
 	/**
 	 *
 	 * Return the minimal HeapItem, null if empty.
