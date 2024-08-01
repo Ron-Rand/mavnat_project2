@@ -404,7 +404,7 @@ public class BinomialHeap
 			}
 			else if (currHeap2.rank == currHeap1.rank){
 
-				while (currHeap2.rank == currHeap1.rank && currHeap1.next != currHeap1){
+				while (currHeap2.rank == currHeap1.rank && currHeap1 != currHeap1.next){
 					prevHeap1.next=currHeap1.next;
 					currHeap1.next = currHeap1;
 					//num trees change
@@ -431,15 +431,16 @@ public class BinomialHeap
 					//num trees change
 					this.numTrees++;
 				}
-				else {
+				else{
 					if (currHeap2.item.key >= currHeap1.item.key){
 						currHeap1.connect(currHeap2);
 					}
 					else {
 						currHeap2.connect(currHeap1);
+
 						this.last = currHeap2;
-						currHeap2.next = currHeap2;
 						currHeap1 = currHeap2;
+						prevHeap1 = currHeap2;
 
 					}
 				}
