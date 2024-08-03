@@ -412,6 +412,9 @@ public class BinomialHeap
 
 					if (currHeap2.item.key >= currHeap1.item.key){
 						currHeap1.connect(currHeap2);
+						if (currHeap2 == this.min){
+							this.min = currHeap1;
+						}
 						currHeap1 = prevHeap1.next;
 						currHeap2 = currHeap2.parent;
 					}
@@ -419,6 +422,9 @@ public class BinomialHeap
 						currHeap2.connect(currHeap1);
 						if (currHeap1 == this.last){
 							this.last = currHeap2;
+						}
+						if (currHeap1 == this.min){
+							this.min = currHeap2;
 						}
 						currHeap1 = prevHeap1.next;
 					}
@@ -434,10 +440,13 @@ public class BinomialHeap
 				else{
 					if (currHeap2.item.key >= currHeap1.item.key){
 						currHeap1.connect(currHeap2);
+						this.min = currHeap1;
 					}
 					else {
 						currHeap2.connect(currHeap1);
 
+
+						this.min = currHeap2;
 						this.last = currHeap2;
 						currHeap1 = currHeap2;
 						prevHeap1 = currHeap2;
