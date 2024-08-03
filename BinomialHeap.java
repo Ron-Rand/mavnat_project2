@@ -203,11 +203,13 @@ public class BinomialHeap
 	 *
 	 */
 	public void meld(BinomialHeap heap2){
+
 		if (heap2 == null) return;
 		if (heap2.size == 0){
 			return;
 		}
 		if (this.size == 0){
+
 			this.size = heap2.size;
 			this.last = heap2.last;
 			this.min = heap2.min;
@@ -225,8 +227,8 @@ public class BinomialHeap
 		HeapNode prevHeap1 = this.last;
 		HeapNode currHeap2 = heap2.last.next;
 
-
 		for (int i = 0; i<heap2.numTrees();i++){
+
 			HeapNode next = currHeap2.next;
 			while (currHeap2.rank > currHeap1.rank){
 				if (currHeap1 == this.last){
@@ -242,6 +244,7 @@ public class BinomialHeap
 				currHeap1 = currHeap1.next;
 			}
 			currHeap2.next = currHeap2;
+
 			if (currHeap2.rank < currHeap1.rank){
 				prevHeap1.next = currHeap2;
 				currHeap2.next = currHeap1;
@@ -258,17 +261,67 @@ public class BinomialHeap
 					//num trees change
 					this.numTrees--;
 
+					boolean isLast = currHeap1 == this.last;
+
+
+
+
+					//three trees with same rank
+					if (i+1 < heap2.numTrees && currHeap2.rank == next.rank){
+						HeapNode tempNext = next.next;
+						if (next.item.key > currHeap2.item.key && currHeap1.item.key > currHeap2.item.key){
+
+							currHeap2.next = prevHeap1.next;
+							prevHeap1.next = currHeap2;
+							prevHeap1 = currHeap2;
+
+							next.next = null;
+							currHeap2 = next;
+
+
+						}
+						else if (next.item.key > currHeap1.item.key && currHeap2.item.key > currHeap1.item.key) {
+
+							currHeap1.next = prevHeap1.next;
+							prevHeap1.next = currHeap1;
+							prevHeap1 = currHeap1;
+
+							next.next = null;
+							currHeap1 = next;
+
+						}
+						else {
+							next.next = prevHeap1.next;
+							prevHeap1.next = next;
+							prevHeap1 = next;
+						}
+
+						this.numTrees++;
+						i++;
+						next = tempNext;
+
+					}
+
+
+
+
+
+
+
 					if (currHeap2.item.key >= currHeap1.item.key){
 						currHeap1.connect(currHeap2);
 						if (currHeap2 == this.min){
 							this.min = currHeap1;
+						}
+						if (isLast){
+							this.last = currHeap1;
 						}
 						currHeap1 = prevHeap1.next;
 						currHeap2 = currHeap2.parent;
 					}
 					else {
 						currHeap2.connect(currHeap1);
-						if (currHeap1 == this.last){
+						if (isLast){
 							this.last = currHeap2;
 						}
 						if (currHeap1 == this.min){
@@ -288,7 +341,10 @@ public class BinomialHeap
 				else{
 					if (currHeap2.item.key >= currHeap1.item.key){
 						currHeap1.connect(currHeap2);
-						this.min = currHeap1;
+						if (currHeap2 == this.min){
+							this.min = currHeap1;
+						}
+
 					}
 					else {
 						currHeap2.connect(currHeap1);
