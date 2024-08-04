@@ -25,32 +25,30 @@ public class BinomialHeap
 	 * Insert (key,info) into the heap and return the newly generated HeapItem.
 	 *
 	 */
-	public HeapItem insert(int key, String info)
-	{
-		BinomialHeap toMeld = new BinomialHeap();
-		toMeld.numTrees = 1;
-
-		HeapItem i = new HeapItem();
-		i.key = key;
-		i.info = info;
-		i.node = new HeapNode();
-		HeapNode n = i.node;
-		n.next=n;
-		n.item = i;
-		n.rank = 0;
-		n.child = null;
-		n.parent = null;
-
-		toMeld.last = n;
-		toMeld.min = n;
-		toMeld.size = 1;
-
-		this.meld(toMeld);
-
-
-
-		return i; // should be replaced by student code
-	}
+	public HeapItem insert(int key, String info) {
+	        //create heap with one element end meld it to our heap
+	        BinomialHeap toMeld = new BinomialHeap();
+	        toMeld.numTrees = 1;
+	
+	        //create our new element with the key and info
+	        HeapItem i = new HeapItem();
+	        i.key = key;
+	        i.info = info;
+	        i.node = new HeapNode();
+	        HeapNode n = i.node;
+	        n.next=n;
+	        n.item = i;
+	        n.rank = 0;
+	        n.child = null;
+	        n.parent = null;
+	
+	        toMeld.last = n;
+	        toMeld.min = n;
+	        toMeld.size = 1;
+	
+	        this.meld(toMeld);
+	        return i;
+	    }
 
 	/**
 	 *
@@ -58,109 +56,94 @@ public class BinomialHeap
 	 *
 	 */
 	public void deleteMin(){
-		if (this.size == 0 || this.size == 1){
-			this.min = null;
-			this.size = 0;
-			this.numTrees = 0;
-			this.last = null;
-		}
-		else if (this.numTrees == 1){
-
-			HeapNode newLast = this.min.child;
-			HeapNode newMin = this.min.child;
-
-			HeapNode curr = this.min.child.next;
-			do{
-				curr.parent = null;
-
-				if(newMin.item.key >= curr.item.key){
-					newMin = curr;
-				}
-
-				curr = curr.next;
-
-			}while (curr.rank != 0);
-
-
-			this.numTrees = this.min.rank;
-			this.size = this.size - 1;
-			this.min = newMin;
-			this.last = newLast;
-
-		}
-		else if( this.min.rank == 0){
-
-			HeapNode newMin = this.min.next;
-			HeapNode curr = this.min.next;
-			while (curr != this.min){
-				if (newMin.item.key >= curr.item.key){
-					newMin = curr;
-				}
-				curr = curr.next;
-			}
-
-			this.last.next = this.min.next;
-			this.size -= 1;
-			this.numTrees -= 1;
-			this.min = newMin;
-
-		}
-		else {
-
-			BinomialHeap toMeld = new BinomialHeap();
-
-			HeapNode toMeldLast = this.min.child;
-			HeapNode toMeldMin = this.min.child;
-
-			HeapNode curr = this.min.child.next;
-			do{
-				curr.parent = null;
-
-				if(toMeldMin.item.key >= curr.item.key){
-					toMeldMin = curr;
-				}
-
-				curr = curr.next;
-
-			}while (curr.rank != 0);
-
-			toMeld.last = toMeldLast;
-			toMeld.min = toMeldMin;
-			toMeld.size = (int)Math.pow(2,this.min.rank)-1;
-			toMeld.numTrees = this.min.rank;
-
-			HeapNode nextLast = this.min.next;
-			HeapNode nextMin = this.min.next;
-
-			curr = this.min;
-
-			while (curr.next != this.min){
-
-				curr = curr.next;
-
-				if(curr.rank > nextLast.rank){
-					nextLast = curr;
-				}
-				if(curr.item.key < nextMin.item.key){
-					nextMin = curr;
-				}
-
-			}
-
-
-
-			curr.next = this.min.next;
-			this.size -= Math.pow(2,this.min.rank);
-			this.last= nextLast;
-			this.min = nextMin;
-			this.numTrees -= 1;
-
-			this.meld(toMeld);
-
-
-
-		}
-	}
+	        //first non trivial case
+	        if(this.size==0||this.size==1){
+	            this.min=null;
+	            this.size=0;
+	            this.numTrees=0;
+	            this.last=null;
+	            return;
+	        }
+	
+	        //second non trivial case
+	        //if minimum has no children than we don't need to use meld just find the new munimu, and connect thr right pointers.
+	        if(this.min.rank == 0){
+	            HeapNode curr = this.min;
+	            HeapNode newMin = this.min.next;
+	            do{
+	                if(curr.next.item.key<newMin.item.key&&curr.next!=this.min){
+	                    newMin = curr.next;
+	                }
+	                curr = curr.next;
+	            }while(curr.next!=this.min);
+	            curr.next = this.min.next;
+	            this.min = newMin;
+	            this.numTrees-=1;
+	            this.size-=1;
+	            return;
+	        }
+	
+	        BinomialHeap toMeld = new BinomialHeap();
+	
+	        // find the heap that will be melded parameters
+	        HeapNode toMeldLast = this.min.child;
+	        int toMeldSize = (int)Math.pow(2,this.min.rank)-1;
+	        int toMeldNumTrees = this.min.rank;
+	
+	        //find our new heap minimum
+	        HeapNode curr = toMeldLast;
+	        HeapNode toMeldMin = curr;
+	        do{
+	            curr.parent=null;
+	            if(curr.item.key<toMeldMin.item.key){
+	                toMeldMin = curr;
+	            }
+	            curr = curr.next;
+	        }while (curr!=toMeldLast);
+	
+	        //set all parameters of the new heap
+	        toMeld.size = toMeldSize;
+	        toMeld.numTrees = toMeldNumTrees;
+	        toMeld.min = toMeldMin;
+	        toMeld.last = toMeldLast;
+	
+	        //third non trivial case
+	        //if heap has one tree after creating our second heap it will have none so we set the parameters accordingly
+	        //otherwise update our heap to be ready to meld with our second heap
+	        if(this.numTrees>1) {
+	
+	            //correct the current heap stats
+	            this.size -= (toMeldSize + 1);
+	            this.numTrees -= 1;
+	
+	            //find new minimum after remove and new last node if changed
+	            curr = this.min;
+	            HeapNode newMin = curr.next;
+	            HeapNode newLast = curr.next;
+	            do {
+	                curr = curr.next;
+	                if (curr.item.key < newMin.item.key) {
+	                    newMin = curr;
+	                }
+	                if (curr.rank > newLast.rank) {
+	                    newLast = curr;
+	                }
+	            } while (curr.next != this.min);
+	
+	            //set the correct parameters
+	            curr.next = this.min.next;
+	            this.min = newMin;
+	            this.last = newLast;
+	        }
+	        else {
+	            this.size=0;
+	            this.numTrees=0;
+	            this.min = null;
+	            this.last = null;
+	        }
+	
+	        this.meld(toMeld);
+	    }
 	 
 	/**
 	 *
@@ -180,37 +163,35 @@ public class BinomialHeap
 	 * Decrease the key of item by diff and fix the heap.
 	 *
 	 */
-	public void decreaseKey(HeapItem item, int diff)
-	{
-		item.key -= diff;
-		while (item.node.parent != null && item.key < item.node.parent.item.key){
-
-			HeapItem tempItem = item.node.parent.item;
-			HeapNode tempNode = item.node;
-			item.node.parent.item = item;
-			item.node = item.node.parent;
-			tempItem.node = tempNode;
-			tempNode.item = tempItem;
-
-
-		}
-		if (item.key < this.min.item.key){
-			this.min = item.node;
-		}
-
-		return; // should be replaced by student code
-	}
-
+	public void decreaseKey(HeapItem item, int diff) {
+	        //decrease the item's value than sift up to the correct place
+	        item.key -= diff;
+	        while (item.node.parent != null && item.key < item.node.parent.item.key){
+	            HeapItem tempItem = item.node.parent.item;
+	            HeapNode tempNode = item.node;
+	            item.node.parent.item = item;
+	            item.node = item.node.parent;
+	            tempItem.node = tempNode;
+	            tempNode.item = tempItem;
+	        }
+	
+	        //if needed update minimum
+	        if (item.key < this.min.item.key){
+	            this.min = item.node;
+	        }
+	
+	        return;
+	    }
 	/**
 	 *
 	 * Delete the item from the heap.
 	 *
 	 */
-	public void delete(HeapItem item)
-	{
-		this.decreaseKey(item,item.key-this.min.item.key+1);
-		this.deleteMin();
-	}
+	public void delete(HeapItem item) {
+	        //decrese key to be the new minimum and than delete the new minimum
+	        this.decreaseKey(item,item.key-this.min.item.key+1);
+	        this.deleteMin();
+    }
 
 	/**
 	 *
@@ -443,7 +424,8 @@ public class BinomialHeap
 		//gets 2 nodes with same rank and connect node2 to node1 such that the rank of node1 increase
 		private void connect(HeapNode node2){
 
-
+			//connect node 2 as a child of this node
+          		//node 2 is from rank 0 so its is the next of this.child if exists else node2 is this nodes child
 			if (this.child != null){
 				HeapNode temp2 = this.child.next;
 				this.child.next = node2;
