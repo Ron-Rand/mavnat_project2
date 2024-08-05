@@ -306,8 +306,6 @@ public class BinomialHeap
 
 					if (currHeap2.item.key >= currHeap1.item.key){
 						currHeap1.connect(currHeap2);
-						//del
-						BinomialHeap.numOfLinkes++;
 						if (currHeap2 == this.min){
 							this.min = currHeap1;
 						}
@@ -319,8 +317,6 @@ public class BinomialHeap
 					}
 					else {
 						currHeap2.connect(currHeap1);
-						//del
-						BinomialHeap.numOfLinkes++;
 						if (isLast){
 							this.last = currHeap2;
 						}
@@ -341,8 +337,6 @@ public class BinomialHeap
 				else{
 					if (currHeap2.item.key >= currHeap1.item.key){
 						currHeap1.connect(currHeap2);
-						//del
-						BinomialHeap.numOfLinkes++;
 						if (currHeap2 == this.min){
 							this.min = currHeap1;
 						}
@@ -350,8 +344,6 @@ public class BinomialHeap
 					}
 					else {
 						currHeap2.connect(currHeap1);
-						//del
-						BinomialHeap.numOfLinkes++;
 
 
 						this.min = currHeap2;
